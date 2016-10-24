@@ -1,1 +1,1 @@
-*** VkClient***
+***VkClient***
