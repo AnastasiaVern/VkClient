@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "VkClient.h"
 #include <iostream>
 #include <string>
