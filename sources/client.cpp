@@ -1,8 +1,8 @@
-#include "VkClient.hpp"
+#include <vk/client.hpp>
 #include <iostream>
 #include <string>
 #include <curl/curl.h>
-#include "json.hpp"
+#include <vk/json.hpp>
 
 namespace Vk {
 	auto VkClient::check_connection()-> bool
