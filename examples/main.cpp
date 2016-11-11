@@ -1,4 +1,4 @@
-#include "VkClient.h"
+#include "VkClient.hpp"
 #include <iostream>
 #include <map>
 #include <string>
