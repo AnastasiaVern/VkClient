@@ -1,5 +1,5 @@
 
-#include "VkClient.h"
+#include <vk/client.hpp"
 #include "catch.hpp"
 #include <iostream>;
 SCENARIO("checking connection")
