@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 #include <curl/curl.h>
-#include <vk/json.hpp>
+#include "json.hpp"
 
 namespace Vk {
 	auto VkClient::check_connection()-> bool
