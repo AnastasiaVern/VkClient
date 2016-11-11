@@ -60,7 +60,6 @@ namespace Vk {
 					curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
 					//	std::cout << std::endl;
 						//std::cout << response_code << std::endl;
-				}
 				curl_easy_cleanup(curl);
 			};
 		}
