@@ -25,6 +25,7 @@ matrix:
             - llvm-toolchain-precise
             - ubuntu-toolchain-r-test
 script:
+  - mrdir build
   - cd build
   - cmake .. && make
-  - ./Tests -s -r compact
+  - ctest
