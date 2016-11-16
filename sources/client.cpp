@@ -36,7 +36,7 @@ namespace Vk {
 		CURL *curl = curl_easy_init();
 		if (curl)
 		{
-			std::string data_to_send = "extended=0&filter=groups&fields&offset=5&count=4&access_token=" + settings_["token"] + "&v=5.59";
+			std::string data_to_send = "extended=1&offset=5&count=4&access_token="+ settings_["token"] + "&v=5.59";
 			CURLcode res;
 			std::string link = "";
 			curl_easy_setopt(curl, CURLOPT_URL, "https://api.vk.com/method/groups.get?");
@@ -48,18 +48,42 @@ namespace Vk {
 			res = curl_easy_perform(curl);
 			if (res == CURLE_OK)
 			{
-			/*	nlohmann::json j_param = nlohmann::json::parse(link.c_str());
-				nlohmann::json j_response = j_param["response"];
-
-				if (!j_response.empty())
+				nlohmann::json j_result = nlohmann::json::parse(link.c_str());
+				nlohmann::json j_resp = j_result["response"];
+				if (!j_resp.empty())
 				{
-					std::cout << "response: " << j_response << std::endl;
-*/
-
-					long response_code;
-					curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
-					//	std::cout << std::endl;
-						//std::cout << response_code << std::endl;
+					size_t count= j_resp["count"];
+					std::cout << "response {" << std::endl;
+					std::cout << "count: " << count << std::endl;
+					if (count)
+					{
+						nlohmann::json g_r= j_resp["items"];
+						for (nlohmann::json::iterator it = g_r.begin(); it != g_r.end(); ++it)
+						{
+							int g_id = it.value()["id"];
+							std::cout << "id: " << g_id <<std::endl;
+							std::string g_name = it.value()["name"];
+							std::cout << "name: " << "'"<< g_name<< "'" <<std::endl;
+							std::string g_screen_name = it.value()["screen_name"];
+							std::cout << "screen_name: " <<"'" <<g_screen_name<<"'" << std::endl;
+							int g_closed = it.value()["is_closed"];
+							std::cout << "is_closed: " << g_closed << std::endl;
+							std::string g_type= it.value()["type"];
+							std::cout << "type: " <<"'"<< g_type <<"'" << std::endl;
+							//int g_admin = it.value()["is_admin"];
+							//std::cout << "is_admin " << g_admin << std::endl;
+							//int g_memb = it.value()["is_member"];
+							//std::cout << "is_member " << g_memb << std::endl;
+						}
+						std::cout << "}" << std::endl;
+					}
+					else
+					{
+						nlohmann::json j_err = j_result["error"];
+						std::cout << "error: " << j_err << std::endl;
+						return;
+					}
+				}
 				curl_easy_cleanup(curl);
 			};
 		}
