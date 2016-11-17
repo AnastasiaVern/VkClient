@@ -89,6 +89,7 @@ namespace Vk {
 				curl_easy_cleanup(curl);
 			};
 		}
+		};
 		auto VkClient::IsJSON(std::string str)-> bool
 	{
 		try 
@@ -101,7 +102,6 @@ namespace Vk {
 			return false;
 		}
 		return true;
-	};
 	};
 	auto VkClient::func(char* ptr, size_t size, size_t nmemb, std::string* link) -> size_t
 	{
