@@ -14,3 +14,4 @@ int main() {
 	Vk::VkClient data({{"token", access_token }});
 	data.check_connection();
 	data.get_groups();
+}
