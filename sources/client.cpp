@@ -1,6 +1,7 @@
 #include <vk/client.hpp>
 #include <iostream>
 #include <string>
+#include <exception> 
 #include <curl/curl.h>
 #include <vk/json.hpp>
 
@@ -30,7 +31,7 @@ namespace Vk {
 
 	//user_id extended filter fields (if extended 1) offset count
 	//https://api.vk.com/method/groups.get?user_ids=asyavern&extended=0&filter=groups&fields&offset=5&count=4&access_token=2f36e6fea00c8115ed5c771dd3904b3f347cf0356e652606c625890fd40906d75bc9f7b82339133cefc10&v=5.59
-	auto VkClient::groups_get()->void
+	auto VkClient::groups_get()->nlohmann::json
 	{
 
 		CURL *curl = curl_easy_init();
@@ -48,6 +49,7 @@ namespace Vk {
 			res = curl_easy_perform(curl);
 			if (res == CURLE_OK)
 			{
+			   IsJSON(link);
 				nlohmann::json j_result = nlohmann::json::parse(link.c_str());
 				nlohmann::json j_resp = j_result["response"];
 				if (!j_resp.empty())
@@ -81,13 +83,25 @@ namespace Vk {
 					{
 						nlohmann::json j_err = j_result["error"];
 						std::cout << "error: " << j_err << std::endl;
-						return;
+						return nullptr;
 					}
 				}
 				curl_easy_cleanup(curl);
 			};
 		}
-		
+		auto VkClient::IsJSON(std::string str)-> bool
+	{
+		try 
+		{
+			nlohmann::json::parse(str.c_str());
+		}
+		catch (std::exception&)
+		{
+			std::cout << "Object is not JSON!!!" << std::endl;
+			return false;
+		}
+		return true;
+	};
 	};
 	auto VkClient::func(char* ptr, size_t size, size_t nmemb, std::string* link) -> size_t
 	{
