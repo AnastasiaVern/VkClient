@@ -13,5 +13,4 @@ int main() {
 	std::cin >> access_token;
 	Vk::VkClient data({{"token", access_token }});
 	data.check_connection();
-	data.groups_get();
-}
+	data.get_groups();
