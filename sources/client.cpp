@@ -31,7 +31,7 @@ namespace Vk {
 
 	//user_id extended filter fields (if extended 1) offset count
 	//https://api.vk.com/method/groups.get?user_ids=asyavern&extended=0&filter=groups&fields&offset=5&count=4&access_token=2f36e6fea00c8115ed5c771dd3904b3f347cf0356e652606c625890fd40906d75bc9f7b82339133cefc10&v=5.59
-	auto VkClient::groups_get()->nlohmann::json
+	auto VkClient::get_groups()->nlohmann::json
 	{
 
 		CURL *curl = curl_easy_init();
