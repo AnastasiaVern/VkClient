@@ -82,7 +82,7 @@ namespace Vk {
 					else
 					{
 						nlohmann::json j_err = j_result["error"];
-						std::cout << "error: " << j_err << std::endl;
+						std::cerr << "error: " << j_err << std::endl;
 						return nullptr;
 					}
 				}
@@ -98,7 +98,7 @@ namespace Vk {
 		}
 		catch (std::exception&)
 		{
-			std::cout << "Object is not JSON!!!" << std::endl;
+			std::cerr << "Object is not JSON!!!" << std::endl;
 			return false;
 		}
 		return true;
