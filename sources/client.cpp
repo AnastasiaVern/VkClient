@@ -42,52 +42,61 @@ namespace Vk {
             curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, func);
             curl_easy_setopt(curl, CURLOPT_WRITEDATA, &link);
             res = curl_easy_perform(curl);
-            if (res == CURLE_OK)
-            {
-                try
-                {
-                    nlohmann::json j_result = nlohmann::json::parse(link.c_str());
-                    nlohmann::json j_resp = j_result["response"];
-                if (!j_resp.empty())
-                {
-                    size_t count= j_resp["count"];
-                    std::cout << "response {" << std::endl;
-                    std::cout << "count: " << count << std::endl;
-                    if (count)
-                    {
-                        nlohmann::json g_r= j_resp["items"];
-                        for (nlohmann::json::iterator it = g_r.begin(); it != g_r.end(); ++it)
-                        {
-                            int g_id = it.value()["id"];
-                            std::cout << "id: " << g_id <<std::endl;
-                            std::string g_name = it.value()["name"];
-                            std::cout << "name: " << "'"<< g_name<< "'" <<std::endl;
-                            std::string g_screen_name = it.value()["screen_name"];
-                            std::cout << "screen_name: " <<"'" <<g_screen_name<<"'" << std::endl;
-                            int g_closed = it.value()["is_closed"];
-                            std::cout << "is_closed: " << g_closed << std::endl;
-                            std::string g_type= it.value()["type"];
-                            std::cout << "type: " <<"'"<< g_type <<"'" << std::endl;
-                        }
-                        std::cout << "}" << std::endl;
-                    }
-                    else
-                    {
-                        nlohmann::json j_err = j_result["error"];
-                        std::cerr << "error: " << j_err << std::endl;
-                        return nullptr;
-                    }
-                }
-                }
-                catch (std::exception&)
-                {
-                    std::cerr << "Object is not JSON!!!" << std::endl;
-                    return false;
-                }
-            };
+          if (res == CURLE_OK)
+			{
+				try
+				{
+					nlohmann::json j_result = nlohmann::json::parse(link.c_str());
+					nlohmann::json j_resp = j_result["response"];
+					if (!j_resp.empty())
+					{
+						size_t count = j_resp["count"];
+						return j_resp;
+					}
+					else
+					{
+						nlohmann::json j_err = j_result["error"];
+						std::cerr << "error: " << j_err << std::endl;
+						return nullptr;
+					}
+				}
+				catch (std::exception&)
+				{
+					std::cerr << "Object is not JSON!!!" << std::endl;
+				}
+				return nullptr;
+			};
             curl_easy_cleanup(curl);
         }   
     };
+    
+    auto VkClient::print_groups(nlohmann::json j_resp)->void 
+	{
+		if (!j_resp.empty())
+		{
+			size_t count = j_resp["count"];
+			std::cout << "response {" << std::endl;
+			std::cout << "count: " << count << std::endl;
+			if (count)
+			{
+				nlohmann::json g_r = j_resp["items"];
+				for (nlohmann::json::iterator it = g_r.begin(); it != g_r.end(); ++it)
+				{
+					int g_id = it.value()["id"];
+					std::cout << "id: " << g_id << std::endl;
+					std::string g_name = it.value()["name"];
+					std::cout << "name: " << "'" << g_name << "'" << std::endl;
+					std::string g_screen_name = it.value()["screen_name"];
+					std::cout << "screen_name: " << "'" << g_screen_name << "'" << std::endl;
+					int g_closed = it.value()["is_closed"];
+					std::cout << "is_closed: " << g_closed << std::endl;
+					std::string g_type = it.value()["type"];
+					std::cout << "type: " << "'" << g_type << "'" << std::endl;
+				}
+				std::cout << "}" << std::endl;
+		    }
+		}
+	}
     
     auto VkClient::func(char* ptr, size_t size, size_t nmemb, std::string* link) -> size_t
     {
