@@ -12,7 +12,7 @@ namespace Vk {
 		VkClient(dict_t settings) : settings_(settings) {};
 		auto check_connection() -> bool;
 		auto get_groups()-> nlohmann::json;
-		auto IsJSON(std::string str)->bool;
+		static auto print_groups(nlohmann::json j_resp)->void;
 		static auto func(char* ptr, size_t size, size_t nmemb, std::string* link)->size_t;
 	private:
 		dict_t settings_;
