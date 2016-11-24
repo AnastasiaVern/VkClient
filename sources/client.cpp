@@ -5,6 +5,7 @@
 #include <mutex>
 #include <thread>
 #include <vector>
+#include <chrono>
 #include <curl/curl.h>
 #include <vk/json.hpp>
 namespace Vk {
@@ -105,28 +106,35 @@ namespace Vk {
 		    }
 		}
 	}
-    auto VkClient::do_threads(size_t i)-> void
+ 	auto VkClient::do_threads(size_t i)-> void
 	{
-			std::cout <<"id: "<< group_ids[i] << std::endl;
-			std::cout << "name: "<< group_names[i] << std::endl;
-			std::cout << "is_closed: "<< group_privacy[i] << std::endl;
+		    std::lock_guard<std::mutex> lck(m);
+			std::time_t time_start = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+			std::cout << "id: " << group_ids[i] << std::endl;
+			std::cout << "name: " << group_names[i] << std::endl;
+			std::cout << "is_closed: " << group_privacy[i] << std::endl;
+			std::cout << "Время начала: " << ctime(&time_start) << std::endl;
 	};
 	auto VkClient::start_streaming(int n)->void
 	{
 		auto yadro = std::thread::hardware_concurrency();
-		if (n >= 1 && n<=yadro) {
-			for (int i = 0; i < n; ++i)
+		if (n >= 1 && n <= yadro) 
+		{
+			if (group_ids.size() <= n)
 			{
-				std::cout << "I'm  " << (i + 1) << " thread" << std::endl;
-				threads.push_back(std::thread(do_threads, i));
-				if (threads[i].joinable())
+
+				for (int i = 0; i < n; ++i)
 				{
-					auto time_start = GetTickCount();
-					std::lock_guard<std::mutex> lck(m);
-					threads[i].join();
-					std::cout << "Время начала: " << time_start << std::endl;
-					std::cout << "Время конца: " << GetTickCount() << std::endl;
-					std::cout << std::endl;
+ 					std::cout << "I'm  " << (i + 1) << " thread" << std::endl;
+					threads.push_back(std::thread(do_threads, i));
+					if (threads[i].joinable()) 
+					{
+	
+						
+						threads[i].join();
+						std::time_t time_end = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+						std::cout << "Время конца: " << ctime(&time_end)<< std::endl;
+					};
 				}
 				std::this_thread::sleep_for(std::chrono::milliseconds(500));
 			}
