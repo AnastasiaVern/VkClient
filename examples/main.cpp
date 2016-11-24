@@ -13,6 +13,8 @@ int main() {
 	std::cin >> access_token;
 	Vk::VkClient data({{"token", access_token }});
 	data.check_connection();
-	data.get_groups();
+	//data.get_groups();
 	data.print_groups(data.get_groups());
+        data.start_streaming(4);
+	//token for 24.11.2016 219eaf4157e83b3e234c95bdcc2ca09804d4d6b2a8a9b3cd6a8d90e625322ed35f022dcfe9efa838eaeab
 }
