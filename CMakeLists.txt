@@ -17,6 +17,15 @@ find_package(OpenSSL REQUIRED)
 find_package(CURL REQUIRED)
 include_directories(${CURL_INCLUDE_DIR})
 
+if(THREADS_HAVE_PTHREAD_ARG)
+	set_property(TARGET ${PROJECT_NAME} PROPERTY COMPILE_OPTIONS "-pthread")
+	set_property(TARGET ${PROJECT_NAME} PROPERTY INTERFACE_COMPILE_OPTIONS "-pthread")
+endif()
+
+if(CMAKE_THREAD_LIBS_INIT)
+	target_link_libraries(${PROJECT_NAME} "${CMAKE_THREAD_LIBS_INIT}")
+endif()
+
 if(UNIX)
 	set(DEPENDS_LIBRARIES ${OPENSSL_LIBRARIES} ${CURL_LIBRARY} ${Boost_LIBRARIES})
 elseif(MSVC)
