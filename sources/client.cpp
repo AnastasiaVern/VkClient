@@ -2,9 +2,17 @@
 #include <iostream>
 #include <string>
 #include <exception> 
+#include <mutex>
+#include <thread>
+#include <vector>
 #include <curl/curl.h>
 #include <vk/json.hpp>
 namespace Vk {
+	std::mutex m;
+	std::vector<std::thread> threads;
+	std::vector<std::string> group_names;
+	std::vector<int> group_ids;
+	std::vector<int> group_privacy;
     auto VkClient::check_connection()-> bool
     {
         CURL *curl = curl_easy_init();
@@ -86,18 +94,44 @@ namespace Vk {
 					std::cout << "id: " << g_id << std::endl;
 					std::string g_name = it.value()["name"];
 					std::cout << "name: " << "'" << g_name << "'" << std::endl;
-					std::string g_screen_name = it.value()["screen_name"];
-					std::cout << "screen_name: " << "'" << g_screen_name << "'" << std::endl;
+					//std::string g_screen_name = it.value()["screen_name"];
+					//std::cout << "screen_name: " << "'" << g_screen_name << "'" << std::endl;
 					int g_closed = it.value()["is_closed"];
 					std::cout << "is_closed: " << g_closed << std::endl;
-					std::string g_type = it.value()["type"];
-					std::cout << "type: " << "'" << g_type << "'" << std::endl;
+					//std::string g_type = it.value()["type"];
+					//std::cout << "type: " << "'" << g_type << "'" << std::endl;
 				}
 				std::cout << "}" << std::endl;
 		    }
 		}
 	}
-    
+    auto VkClient::do_threads(size_t i)-> void
+	{
+			std::cout <<"id: "<< group_ids[i] << std::endl;
+			std::cout << "name: "<< group_names[i] << std::endl;
+			std::cout << "is_closed: "<< group_privacy[i] << std::endl;
+	};
+	auto VkClient::start_streaming(int n)->void
+	{
+		auto yadro = std::thread::hardware_concurrency();
+		if (n >= 1 && n<=yadro) {
+			for (int i = 0; i < n; ++i)
+			{
+				std::cout << "I'm  " << (i + 1) << " thread" << std::endl;
+				threads.push_back(std::thread(do_threads, i));
+				if (threads[i].joinable())
+				{
+					auto time_start = GetTickCount();
+					std::lock_guard<std::mutex> lck(m);
+					threads[i].join();
+					std::cout << "Время начала: " << time_start << std::endl;
+					std::cout << "Время конца: " << GetTickCount() << std::endl;
+					std::cout << std::endl;
+				}
+				std::this_thread::sleep_for(std::chrono::milliseconds(500));
+			}
+		}
+	}
     auto VkClient::func(char* ptr, size_t size, size_t nmemb, std::string* link) -> size_t
     {
         *link += ptr;
