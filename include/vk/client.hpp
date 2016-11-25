@@ -12,7 +12,7 @@ namespace Vk {
 		VkClient(dict_t settings) : settings_(settings) {};
 		auto check_connection() -> bool;
 		auto get_groups()-> nlohmann::json;
-		auto start_streaming(int n)->void;
+		auto start_streaming(int n, int resp)->void;
 		static auto do_threads(size_t i)-> void;
 		static auto print_groups(nlohmann::json j_resp)->void;
 		static auto func(char* ptr, size_t size, size_t nmemb, std::string* link)->size_t;
