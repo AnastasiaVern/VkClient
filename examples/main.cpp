@@ -15,7 +15,7 @@ int main() {
 	std::cout << "Access_token: ";
 	std::cin >> access_token;
 	Vk::VkClient data({ { "token", access_token } });
-	if (data.check_connection() == TRUE) 
+	if (data.check_connection() ) 
 	{
 		int n;
 		data.print_groups(data.get_groups());
