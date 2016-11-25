@@ -15,6 +15,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/)
 add_library(${PROJECT_NAME} STATIC ${CMAKE_CURRENT_SOURCE_DIR}/sources/client.cpp)
 find_package(OpenSSL REQUIRED)
 find_package(CURL REQUIRED)
+find_package(Threads REQUIRED)
 include_directories(${CURL_INCLUDE_DIR})
 
 if(THREADS_HAVE_PTHREAD_ARG)
