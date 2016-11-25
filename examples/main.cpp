@@ -26,21 +26,21 @@ int main() {
 		std::cerr << e.what();
 	}
 	Vk::VkClient data({ { "token", access_token } });
-	if (data.check_connection()==1)
+	if (data.check_connection())
 	{
 		data.print_groups(data.get_groups());	
-		int n;
-		std::cout << "Please enter the number of threads: " << std::endl;
-		if (std::cin >> n)
+		std::cout << "Flag: ";
+		std::cin >> users_flag;
+		if (flag == users_flag)
 		{
-			std::cout << "Flag: ";
-			std::cin >> users_flag;
-			if (flag == users_flag)
+			int n;
+			std::cout << "Please enter the number of threads: " << std::endl;
+			if (std::cin >> n)
 			{
 				data.start_streaming(n);
 			}
-			else std::cout << "You should use -v as a flag";
-		}
+		}	
+		else std::cout << "You should use -v as a flag";
 	}
 	else std::cout << "Didn't manage to connect" << std::endl;
 	system("pause");
