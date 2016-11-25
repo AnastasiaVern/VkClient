@@ -10,6 +10,7 @@ int main() {
 	setlocale(LC_ALL, "rus");
 	std::string flag = "-v";
 	std::string users_flag;
+	int resp;
 	std::string access_token;
 	std::cout << "Hello! If you want to get the access_token please check the link below" << std::endl;
 	std::cout << "https://oauth.vk.com/authorize?client_id=5685143&display=page&redirect_uri=http://vk.com/callback&scope=friends&response_type=token&v=5.59&state=1" << std::endl;
