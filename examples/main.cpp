@@ -14,29 +14,35 @@ int main() {
 	std::cout << "Hello! If you want to get the access_token please check the link below" << std::endl;
 	std::cout << "https://oauth.vk.com/authorize?client_id=5685143&display=page&redirect_uri=http://vk.com/callback&scope=friends&response_type=token&v=5.59&state=1" << std::endl;
 	std::cout << "Access_token: ";
-	std::cin >> access_token;
-	Vk::VkClient data({ { "token", access_token } });
-	if (data.check_connection()) 
-	{
-		int n;
-		data.print_groups(data.get_groups());
-		std::cout << "Please enter the number of threads: " << std::endl;
-		try {
-			if (std::cin >> n)
-			{
-				std::cout << "Flag: ";
-				std::cin >> users_flag;
-				if (flag == users_flag)
-				{
-					data.start_streaming(n);
-				}
-			}
-			else throw std::logic_error("Invalid argument!");
-		}
-		catch (std::exception& e) 
+	try {
+		if (std::cin >> access_token) 
 		{
-			std::cerr << e.what();
+			std::cout << "Loading..."<<std::endl;
 		}
+		else throw std::logic_error("Invalid argument!");
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << e.what();
+	}
+	Vk::VkClient data({ { "token", access_token } });
+	if (data.check_connection()==1)
+	{
+		data.print_groups(data.get_groups());	
+		int n;
+		std::cout << "Please enter the number of threads: " << std::endl;
+		if (std::cin >> n)
+		{
+			std::cout << "Flag: ";
+			std::cin >> users_flag;
+			if (flag == users_flag)
+			{
+				data.start_streaming(n);
+			}
+			else std::cout << "You should use -v as a flag";
+		}
+	}
+	else std::cout << "Didn't manage to connect" << std::endl;
 	system("pause");
 	return 0;
 }
