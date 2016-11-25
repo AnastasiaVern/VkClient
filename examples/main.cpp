@@ -2,6 +2,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <exception>
 #include <thread>
 
 int main() {
@@ -15,19 +16,27 @@ int main() {
 	std::cout << "Access_token: ";
 	std::cin >> access_token;
 	Vk::VkClient data({ { "token", access_token } });
-	if (data.check_connection() ) 
+	if (data.check_connection()) 
 	{
 		int n;
 		data.print_groups(data.get_groups());
 		std::cout << "Please enter the number of threads: " << std::endl;
-		std::cin >> n;
-		std::cout << "Flag: ";
-		std::cin >> users_flag;
-		if (flag == users_flag)
-		{
-			data.start_streaming(n);
+		try {
+			if (std::cin >> n)
+			{
+				std::cout << "Flag: ";
+				std::cin >> users_flag;
+				if (flag == users_flag)
+				{
+					data.start_streaming(n);
+				}
+			}
+			else throw std::logic_error("Invalid argument!");
 		}
-	};
+		catch (std::exception& e) 
+		{
+			std::cerr << e.what();
+		}
 	system("pause");
 	return 0;
 }
