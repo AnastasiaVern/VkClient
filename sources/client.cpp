@@ -120,7 +120,7 @@ namespace Vk {
 			std::cout << "Время начала: " << ctime(&time_start) << std::endl;
 	};
 
-auto VkClient::start_streaming(int n)->void
+auto VkClient::start_streaming(int n, int resp)->void
 	{
 		auto hardware_conc = std::thread::hardware_concurrency();
 		try {
@@ -132,20 +132,25 @@ auto VkClient::start_streaming(int n)->void
 					threads.push_back(std::thread(do_threads, i));
 					if (threads[i].joinable())
 					{
-
-
+						std::time_t time_start = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 						threads[i].join();
 						std::time_t time_end = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-						std::cout << "Время конца: " << ctime(&time_end) << std::endl;
+						if (resp == 1)
+						{
+							std::cout << "Время начала: " << ctime(&time_start) << std::endl;
+							std::cout << "Время конца: " << ctime(&time_end) << std::endl;
+						}
+
 					};
 				}
+				
 			}
-			throw std::logic_error("Invalid number of threads");
-		}
-		catch (std::exception &e) 
-		{
-			std::cerr << e.what();
-		}
+			else throw std::logic_error("Invalid number of threads");
+		   }
+			catch (std::exception &e)
+			{
+				std::cerr << e.what();
+			}
 	}
 
 	auto VkClient::func(char* ptr, size_t size, size_t nmemb, std::string* link) -> size_t
