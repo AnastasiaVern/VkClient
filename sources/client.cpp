@@ -14,44 +14,45 @@ namespace Vk {
 	std::vector<std::string> group_names;
 	std::vector<int> group_ids;
 	std::vector<int> group_privacy;
-    auto VkClient::check_connection()-> bool
-    {
-        CURL *curl = curl_easy_init();
-        if (curl) {
-            std::string data_to_send = "access_token=" + settings_["token"] + "&v=5.59";
-            CURLcode res;
-            curl_easy_setopt(curl, CURLOPT_URL, "https://api.vk.com/method/account.getInfo?");
-            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data_to_send.c_str());
-            curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, data_to_send.length());
-            res = curl_easy_perform(curl);
-            if (res == CURLE_OK) {
-                long response_code;
-                curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
-                std::cout << std::endl;
-                std::cout << response_code << std::endl;
-                return true;
-            }
-            curl_easy_cleanup(curl);
-        }
-        return false;
-    };
+	auto VkClient::check_connection()-> bool
+	{
+		CURL *curl = curl_easy_init();
+		if (curl) {
+			std::string data_to_send = "access_token=" + settings_["token"] + "&v=5.59";
+			CURLcode res;
+			curl_easy_setopt(curl, CURLOPT_URL, "https://api.vk.com/method/account.getInfo?");
+			curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data_to_send.c_str());
+			curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, data_to_send.length());
 
-    auto VkClient::get_groups()->nlohmann::json
-    {
-        CURL *curl = curl_easy_init();
-        if (curl)
-        {
-            std::string data_to_send = "extended=1&offset=5&count=4&access_token="+ settings_["token"] + "&v=5.59";
-            CURLcode res;
-            std::string link = "";
-            curl_easy_setopt(curl, CURLOPT_URL, "https://api.vk.com/method/groups.get?");
-            curl_easy_setopt(curl, CURLOPT_POST, 1);
-            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data_to_send.c_str());
-            curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, data_to_send.length());
-            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, func);
-            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &link);
-            res = curl_easy_perform(curl);
-          if (res == CURLE_OK)
+			res = curl_easy_perform(curl);
+			if (res == CURLE_OK) {
+				long response_code;
+				curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
+				std::cout << std::endl;
+				std::cout << response_code << std::endl;
+				return true;
+			}
+			curl_easy_cleanup(curl);
+		}
+		return false;
+	};
+	auto VkClient::get_groups()->nlohmann::json
+	{
+
+		CURL *curl = curl_easy_init();
+		if (curl)
+		{
+			std::string data_to_send = "extended=1&offset=5&count=4&access_token=" + settings_["token"] + "&v=5.59";
+			CURLcode res;
+			std::string link = "";
+			curl_easy_setopt(curl, CURLOPT_URL, "https://api.vk.com/method/groups.get?");
+			curl_easy_setopt(curl, CURLOPT_POST, 1);
+			curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data_to_send.c_str());
+			curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, data_to_send.length());
+			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, func);
+			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &link);
+			res = curl_easy_perform(curl);
+			if (res == CURLE_OK)
 			{
 				try
 				{
@@ -75,16 +76,16 @@ namespace Vk {
 				}
 				return nullptr;
 			};
-            curl_easy_cleanup(curl);
-        }   
-    };
-    
-    auto VkClient::print_groups(nlohmann::json j_resp)->void 
+			curl_easy_cleanup(curl);
+		}
+
+	};
+	auto VkClient::print_groups(nlohmann::json j_resp)->void
 	{
 		if (!j_resp.empty())
 		{
 			size_t count = j_resp["count"];
-			std::cout << "response {" << std::endl;
+			std::cout << "response {" << std::endl; 
 			std::cout << "count: " << count << std::endl;
 			if (count)
 			{
@@ -92,21 +93,24 @@ namespace Vk {
 				for (nlohmann::json::iterator it = g_r.begin(); it != g_r.end(); ++it)
 				{
 					int g_id = it.value()["id"];
+					group_ids.push_back(g_id);
 					std::cout << "id: " << g_id << std::endl;
 					std::string g_name = it.value()["name"];
+					group_names.push_back(g_name);
 					std::cout << "name: " << "'" << g_name << "'" << std::endl;
-					//std::string g_screen_name = it.value()["screen_name"];
-					//std::cout << "screen_name: " << "'" << g_screen_name << "'" << std::endl;
+					std::string g_screen_name = it.value()["screen_name"];
+					std::cout << "screen_name: " << "'" << g_screen_name << "'" << std::endl;
 					int g_closed = it.value()["is_closed"];
 					std::cout << "is_closed: " << g_closed << std::endl;
-					//std::string g_type = it.value()["type"];
-					//std::cout << "type: " << "'" << g_type << "'" << std::endl;
+					group_privacy.push_back(g_closed);
+					std::string g_type = it.value()["type"];
+					std::cout << "type: " << "'" << g_type << "'" << std::endl;
 				}
 				std::cout << "}" << std::endl;
-		    }
+			}
 		}
 	}
- 	auto VkClient::do_threads(size_t i)-> void
+	auto VkClient::do_threads(size_t i)-> void
 	{
 		    std::lock_guard<std::mutex> lck(m);
 			std::time_t time_start = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
@@ -115,14 +119,12 @@ namespace Vk {
 			std::cout << "is_closed: " << group_privacy[i] << std::endl;
 			std::cout << "Время начала: " << ctime(&time_start) << std::endl;
 	};
+
 	auto VkClient::start_streaming(int n)->void
 	{
-		auto yadro = std::thread::hardware_concurrency();
-		if (n >= 1 && n <= yadro) 
+		auto hardware_conc = std::thread::hardware_concurrency();
+		if (n >= 1 && n <= hardware_conc && group_ids.size() <= n)
 		{
-			if (group_ids.size() <= n)
-			{
-
 				for (int i = 0; i < n; ++i)
 				{
  					std::cout << "I'm  " << (i + 1) << " thread" << std::endl;
@@ -136,13 +138,16 @@ namespace Vk {
 						std::cout << "Время конца: " << ctime(&time_end)<< std::endl;
 					};
 				}
-				std::this_thread::sleep_for(std::chrono::milliseconds(500));
-			}
+		}
+		else 
+		{
+			std::cout << "Error!" << std::endl;
 		}
 	}
-    auto VkClient::func(char* ptr, size_t size, size_t nmemb, std::string* link) -> size_t
-    {
-        *link += ptr;
-        return size*nmemb;
-    }
+
+	auto VkClient::func(char* ptr, size_t size, size_t nmemb, std::string* link) -> size_t
+	{
+		*link += ptr;
+		return size*nmemb;
+	}
 }
